@@ -15,10 +15,19 @@ public class Controller {
     @FXML
     private Pane game;
 
+    private ImageView carR;
+
     @FXML
     private void initialize(){
         frog = new Avatar("image/frog_50_38_lila.png");
+        carR = new ImageView("image/car_green_40_r.png");
+
         game.getChildren().add(frog);
+        game.getChildren().add(carR);
+        carR.setX(450);
+        carR.setY(500);
+
+
         System.out.println(frog.getX());
         System.out.println(frog.getY());
 
@@ -27,16 +36,29 @@ public class Controller {
         frog.addEventHandler(KeyEvent.KEY_PRESSED,keyEvent ->{
             switch(keyEvent.getCode()){
                 case UP:
+
                    frog.moveUp();
+                   if (frog.intersects(carR.getBoundsInLocal())) {
+                    System.out.println("GAME OVER");
+                   }
                     break;
                 case DOWN:
                     frog.moveDown();
+                    if (frog.intersects(carR.getBoundsInLocal())) {
+                        System.out.println("GAME OVER");
+                    }
                     break;
                 case RIGHT:
                     frog.moveRight();
+                    if (frog.intersects(carR.getBoundsInLocal())) {
+                        System.out.println("GAME OVER");
+                    }
                     break;
                 case LEFT:
                     frog.moveLeft();
+                    if (frog.intersects(carR.getBoundsInLocal())) {
+                        System.out.println("GAME OVER");
+                    }
                     break;
                 default:
                     System.out.println("Falsche Eingabe");
@@ -44,5 +66,10 @@ public class Controller {
         } );
     }
 
+    public boolean collision() {
+
+        System.out.println("getroffen");
+        return false;
+    }
 
 }
