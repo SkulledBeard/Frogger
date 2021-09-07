@@ -114,7 +114,7 @@ public class Controller {
         path2.getElements().add(line1);
         pathTransition2.setDuration(Duration.millis(1500));
         pathTransition2.setNode(carL);
-        pathTransition2.setCycleCount(99999999);
+        pathTransition2.setCycleCount(PathTransition.INDEFINITE);
         pathTransition2.setAutoReverse(false);
         pathTransition2.setPath(path2);
         pathTransition2.play();
