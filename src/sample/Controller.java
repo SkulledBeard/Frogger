@@ -2,6 +2,7 @@ package sample;
 
 
 import javafx.animation.PathTransition;
+import javafx.animation.Transition;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -51,7 +52,6 @@ public class Controller {
         if (carR.intersects(frog.getBoundsInParent()) || carL.intersects(frog.getBoundsInParent())) {
             collision();
         }
-
 
         // Eventhandler
         frog.addEventHandler(KeyEvent.KEY_PRESSED,keyEvent ->{
