@@ -3,6 +3,7 @@ package sample;
 
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,6 +17,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+import javax.naming.Binding;
 import java.util.Timer;
 
 
@@ -104,7 +106,9 @@ public class Controller {
         rectangle.setY(120);
         rectangle.setWidth(900);
         rectangle.setHeight(260);
-        //rectangle.setStroke(Color.BLACK);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setFill(Color.rgb(0,0,0,0));
+        rectangle.setStrokeWidth(0);
 
         heart1.setX(10);
         heart2.setX(70);
@@ -136,8 +140,27 @@ public class Controller {
         carR.translateXProperty().addListener(checkIntersection);
         carR.translateYProperty().addListener(checkIntersection);
 
+        carR2.translateYProperty().addListener(checkIntersection3);
+        carR2.translateXProperty().addListener(checkIntersection3);
 
-        frog.translateYProperty().addListener(checkIntersection3);
+        carL2.translateYProperty().addListener(checkIntersection4);
+        carL2.translateXProperty().addListener(checkIntersection4);
+
+        log1.translateYProperty().addListener(checkIntersectionBaum);
+        log1.translateXProperty().addListener(checkIntersectionBaum);
+        log2.translateYProperty().addListener(checkIntersectionBaum2);
+        log2.translateXProperty().addListener(checkIntersectionBaum2);
+        log3.translateYProperty().addListener(checkIntersectionBaum3);
+        log3.translateXProperty().addListener(checkIntersectionBaum3);
+        log4.translateYProperty().addListener(checkIntersectionBaum4);
+        log4.translateXProperty().addListener(checkIntersectionBaum4);
+        log5.translateYProperty().addListener(checkIntersectionBaum5);
+        log5.translateXProperty().addListener(checkIntersectionBaum5);
+
+        frog.translateYProperty().addListener(checkIntersectionRect);
+        frog.translateXProperty().addListener(checkIntersectionRect);
+
+
         // Eventhandler
         frog.addEventHandler(KeyEvent.KEY_PRESSED,keyEvent ->{
             switch(keyEvent.getCode()){
@@ -304,6 +327,47 @@ public class Controller {
 
     }
 
+    // Prüft ob Frosch mit Stamm kollidiert und bewegt Frosch mit
+    private final ChangeListener<Number> checkIntersectionBaum = (ob,n,n1)->{
+        if (log1.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            System.out.println("BAUM TRIFFT");
+            if(frog.getX() > 50){
+                frog.setX(frog.getX()-6.5);}
+            System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
+        }
+    };
+    private final ChangeListener<Number> checkIntersectionBaum2 = (ob,n,n1)->{
+        if (log2.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            System.out.println("BAUM TRIFFT");
+            if(frog.getX() < 700){
+                frog.setX(frog.getX()+ 6.3);}
+            System.out.println("Nach Rechts durch BAUM -> y = " + frog.getY());
+        }
+    };
+    private final ChangeListener<Number> checkIntersectionBaum3 = (ob,n,n1)->{
+        if (log3.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            System.out.println("BAUM TRIFFT");
+            if(frog.getX() > 50){
+                frog.setX(frog.getX()-6.87);}
+            System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
+        }
+    };
+    private final ChangeListener<Number> checkIntersectionBaum4 = (ob,n,n1)->{
+        if (log4.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            System.out.println("BAUM TRIFFT");
+            if(frog.getX() < 700){
+                frog.setX(frog.getX()+5.74);}
+            System.out.println("Nach Rechts durch BAUM -> y = " + frog.getY());
+        }
+    };
+    private final ChangeListener<Number> checkIntersectionBaum5 = (ob,n,n1)->{
+        if (log5.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            System.out.println("BAUM TRIFFT");
+            if(frog.getX() > 50){
+                frog.setX(frog.getX()-6.58);}
+            System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
+        }
+    };
     // Prüft ob Autos mit Frosch kollidieren
     private final ChangeListener<Number> checkIntersection = (ob,n,n1)->{
         if (carR.getBoundsInParent().intersects(frog.getBoundsInParent())){
@@ -317,8 +381,20 @@ public class Controller {
 
         }
     };
-
     private final ChangeListener<Number> checkIntersection3 = (ob,n,n1)->{
+        if (carR2.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            endgame();
+        }
+    };
+
+    private final ChangeListener<Number> checkIntersection4 = (ob,n,n1)->{
+        if (carL2.getBoundsInParent().intersects(frog.getBoundsInParent())){
+            endgame();
+
+        }
+    };
+
+    private final ChangeListener<Number> checkIntersectionRect = (ob,n,n1)->{
         if (frog.getBoundsInParent().intersects(rectangle.getBoundsInParent())){
             endgame();
 
