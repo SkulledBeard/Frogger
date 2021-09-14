@@ -3,7 +3,6 @@ package sample;
 
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -15,10 +14,9 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
-
-import javax.naming.Binding;
-import java.util.Timer;
 
 
 public class Controller {
@@ -31,9 +29,11 @@ public class Controller {
     @FXML
     private Pane game;
 
-    private Timer timer;
+    private int punkte = 999999;
+    @FXML
+    private Text text = new Text("999999");
 
-    private ImageView carR, carR2;
+    private ImageView carR, carR2, carR3;
     private ImageView carL, carL2;
     private ImageView log1, log2, log3, log4, log5;
 
@@ -48,6 +48,8 @@ public class Controller {
     private PathTransition pathTransition3 = new PathTransition();
     private Path path4 = new Path();
     private PathTransition pathTransition4 = new PathTransition();
+    private Path path5 = new Path();
+    private PathTransition pathTransition5 = new PathTransition();
 
     // log transition
     private Path logPath1 = new Path();
@@ -66,17 +68,18 @@ public class Controller {
     private Rectangle rectangle = new Rectangle();
 
     @FXML
-    private void initialize(){
+    private void initialize() {
 
         frog = new Avatar("image/frog_50_38_lila.png");
         carR = new ImageView("image/car_green_40_r.png");
         carL = new ImageView("image/car_red_40.png");
         carR2 = new ImageView("image/car_green_40_r.png");
         carL2 = new ImageView("image/car_red_40.png");
+        carR3 = new ImageView("image/car_green_40_r.png");
         log1 = new ImageView("image/woodlog.png");
-        log2 = new ImageView("image/woodlog.png");
+        log2 = new ImageView("image/woodlog2.png");
         log3 = new ImageView("image/woodlog.png");
-        log4 = new ImageView("image/woodlog.png");
+        log4 = new ImageView("image/woodlog2.png");
         log5 = new ImageView("image/woodlog.png");
         heart1 = new ImageView("image/heart.png");
         heart2 = new ImageView("image/heart.png");
@@ -84,6 +87,17 @@ public class Controller {
         heart4 = new ImageView("image/heart.png");
         heart5 = new ImageView("image/heart.png");
 
+        game.getChildren().add(text);
+        text.setFont(Font.loadFont("file:C:/Users/Administrator/IdeaProjects/JavaFX/src/font/pixelFont.TTF", 35));
+        text.setFill(Color.WHITE);
+        text.setX(570);
+        text.setY(42);
+
+        game.getChildren().add(heart1);
+        game.getChildren().add(heart2);
+        game.getChildren().add(heart3);
+        game.getChildren().add(heart4);
+        game.getChildren().add(heart5);
         game.getChildren().add(rectangle);
         game.getChildren().add(log1);
         game.getChildren().add(log2);
@@ -95,11 +109,7 @@ public class Controller {
         game.getChildren().add(carL);
         game.getChildren().add(carR2);
         game.getChildren().add(carL2);
-        game.getChildren().add(heart1);
-        game.getChildren().add(heart2);
-        game.getChildren().add(heart3);
-        game.getChildren().add(heart4);
-        game.getChildren().add(heart5);
+        game.getChildren().add(carR3);
 
         //Wasserrechteck platzieren
         rectangle.setX(-10);
@@ -107,7 +117,7 @@ public class Controller {
         rectangle.setWidth(900);
         rectangle.setHeight(260);
         rectangle.setStroke(Color.BLACK);
-        rectangle.setFill(Color.rgb(0,0,0,0));
+        rectangle.setFill(Color.rgb(0, 0, 0, 0));
         rectangle.setStrokeWidth(0);
 
         heart1.setX(10);
@@ -116,20 +126,20 @@ public class Controller {
         heart4.setX(190);
         heart5.setX(250);
 
-        carRTransition();
-        carLTransition();
-        carR2Transition();
-        carL2Transition();
+        objectTransition(-50,690,900,690,path,pathTransition,1235,carR);
+        objectTransition(-50,575,900,575,path3,pathTransition3,1500,carR2);
+        objectTransition(-50,460,900,460,path5,pathTransition5,1100,carR3);
+        objectTransition(900,625,-50,625,path2,pathTransition2,2132,carL);
+        objectTransition(900,515,-50,515,path4,pathTransition4,1500,carL2);
 
-        log1Transition();
-        log2Transition();
-        log3Transition();
-        log4Transition();
-        log5Transition();
+        objectTransition(900,360,-50,360,logPath1,logPathTransition1,3100,log1);
+        objectTransition(-300,305,1050,305,logPath2,logPathTransition2,3500,log2);
+        objectTransition(900,250,-50,250,logPath3,logPathTransition3,3900, log3);
+        objectTransition(-300,195,1050,195,logPath4,logPathTransition4,4800,log4);
+        objectTransition(900,140,-50,140,logPath5,logPathTransition5,2700,log5);
 
         System.out.println(frog.getX());
         System.out.println(frog.getY());
-
 
 
         frog.setFocusTraversable(true);
@@ -142,6 +152,9 @@ public class Controller {
 
         carR2.translateYProperty().addListener(checkIntersection3);
         carR2.translateXProperty().addListener(checkIntersection3);
+
+        carR3.translateYProperty().addListener(checkIntersection5);
+        carR3.translateXProperty().addListener(checkIntersection5);
 
         carL2.translateYProperty().addListener(checkIntersection4);
         carL2.translateXProperty().addListener(checkIntersection4);
@@ -157,258 +170,183 @@ public class Controller {
         log5.translateYProperty().addListener(checkIntersectionBaum5);
         log5.translateXProperty().addListener(checkIntersectionBaum5);
 
-        frog.translateYProperty().addListener(checkIntersectionRect);
-        frog.translateXProperty().addListener(checkIntersectionRect);
+//        frog.translateYProperty().addListener(checkIntersectionRect);
+//        frog.translateXProperty().addListener(checkIntersectionRect);
 
 
         // Eventhandler
-        frog.addEventHandler(KeyEvent.KEY_PRESSED,keyEvent ->{
-            switch(keyEvent.getCode()){
+        frog.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            switch (keyEvent.getCode()) {
                 case UP:
-                   frog.moveUp();
-                   if (frog.intersects(carR.getBoundsInParent()) || frog.intersects(carL.getBoundsInParent()) ) {
-                       collision();
-                   }
+                    frog.moveUp();
+                    punkteTimer();
+                    abfrageBaumUndWasser();
                     break;
                 case DOWN:
                     frog.moveDown();
-                    if (frog.intersects(carR.getBoundsInParent()) || frog.intersects(carL.getBoundsInParent()) ) {
-                        collision();
-                    }
+                    punkteTimer();
+                    abfrageBaumUndWasser();
                     break;
                 case RIGHT:
                     frog.moveRight();
-                    if (frog.intersects(carR.getBoundsInParent()) || frog.intersects(carL.getBoundsInParent()) ) {
-                        collision();
-                    }
+                    punkteTimer();
+                    abfrageBaumUndWasser();
                     break;
                 case LEFT:
                     frog.moveLeft();
-                    if (frog.intersects(carR.getBoundsInParent()) || frog.intersects(carL.getBoundsInParent()) ) {
-                        collision();
-                    }
+                    punkteTimer();
+//                    if (frog.intersects(rectangle.getBoundsInParent()) ) {
+//                        endgame();
+//                    }
+                    abfrageBaumUndWasser();
                     break;
                 default:
                     System.out.println("Falsche Eingabe");
             }
-        } );
+        });
+
     }
 
-    public void collision() {
-
-        System.out.println("getroffen");
+    private void abfrageBaumUndWasser() {
+        if ((!frog.intersects(log5.getBoundsInParent()) || !frog.intersects(log4.getBoundsInParent()) || !frog.intersects(log3.getBoundsInParent()) ||
+                !frog.intersects(log1.getBoundsInParent()) || !frog.intersects(log2.getBoundsInParent())) && frog.intersects(rectangle.getBoundsInParent())) {
+            System.out.println("##########################################");
+            // endgame();
+        }
     }
 
-    public void carRTransition() {
+    private void punkteTimer() {
 
-        MoveTo moveTo = new MoveTo(-50, 680);
-        LineTo line1 = new LineTo(900, 680);
+        punkte -= 321;
+        text.setText(String.valueOf(punkte));
+//        while (punkte != 0){
+//            punkte -= 1;
+//            text.setText(String.valueOf(punkte));
+//        }
+    }
+
+//    public void collision() {
+//
+//        System.out.println("WASSER ----------------- getroffen");
+//    }
+
+    public void objectTransition(int moveToX, int moveToY, int lineToX, int lineToY, Path path, PathTransition pathTransition, int millis, ImageView imageView){
+        MoveTo moveTo = new MoveTo(moveToX, moveToY);
+        LineTo line1 = new LineTo(lineToX, lineToY);
         path.getElements().add(moveTo);
         path.getElements().add(line1);
-        pathTransition.setDuration(Duration.millis(1235));
-        pathTransition.setNode(carR);
+        pathTransition.setDuration(Duration.millis(millis));
+        pathTransition.setNode(imageView);
         pathTransition.setCycleCount(PathTransition.INDEFINITE);
         pathTransition.setAutoReverse(false);
         pathTransition.setPath(path);
         pathTransition.play();
-
-    }
-    public void carR2Transition() {
-
-        MoveTo moveTo = new MoveTo(-50, 525);
-        LineTo line1 = new LineTo(900, 525);
-        path3.getElements().add(moveTo);
-        path3.getElements().add(line1);
-        pathTransition3.setDuration(Duration.millis(1500));
-        pathTransition3.setNode(carR2);
-        pathTransition3.setCycleCount(PathTransition.INDEFINITE);
-        pathTransition3.setAutoReverse(false);
-        pathTransition3.setPath(path3);
-        pathTransition3.play();
-
-    }
-    public void carLTransition() {
-
-        MoveTo moveTo = new MoveTo(900, 640);
-        LineTo line1 = new LineTo(-50, 640);
-        path2.getElements().add(moveTo);
-        path2.getElements().add(line1);
-        pathTransition2.setDuration(Duration.millis(2132));
-        pathTransition2.setNode(carL);
-        pathTransition2.setCycleCount(PathTransition.INDEFINITE);
-        pathTransition2.setAutoReverse(false);
-        pathTransition2.setPath(path2);
-        pathTransition2.play();
-
-    }
-    public void carL2Transition() {
-
-        MoveTo moveTo = new MoveTo(900, 475);
-        LineTo line1 = new LineTo(-50, 475);
-        path4.getElements().add(moveTo);
-        path4.getElements().add(line1);
-        pathTransition4.setDuration(Duration.millis(1500));
-        pathTransition4.setNode(carL2);
-        pathTransition4.setCycleCount(PathTransition.INDEFINITE);
-        pathTransition4.setAutoReverse(false);
-        pathTransition4.setPath(path4);
-        pathTransition4.play();
-
-    }
-
-    public void log1Transition() {
-
-        MoveTo moveTo = new MoveTo(900, 360);
-        LineTo line1 = new LineTo(-50, 360);
-        logPath1.getElements().add(moveTo);
-        logPath1.getElements().add(line1);
-        logPathTransition1.setDuration(Duration.millis(3000));
-        logPathTransition1.setNode(log1);
-        logPathTransition1.setCycleCount(PathTransition.INDEFINITE);
-        logPathTransition1.setAutoReverse(false);
-        logPathTransition1.setPath(logPath1);
-        logPathTransition1.play();
-
-    }
-    public void log2Transition() {
-
-        MoveTo moveTo = new MoveTo(-50, 305);
-        LineTo line1 = new LineTo(900, 305);
-        logPath2.getElements().add(moveTo);
-        logPath2.getElements().add(line1);
-        logPathTransition2.setDuration(Duration.millis(3200));
-        logPathTransition2.setNode(log2);
-        logPathTransition2.setCycleCount(PathTransition.INDEFINITE);
-        logPathTransition2.setAutoReverse(false);
-        logPathTransition2.setPath(logPath2);
-        logPathTransition2.play();
-
-    }
-    public void log3Transition() {
-
-        MoveTo moveTo = new MoveTo(900, 250);
-        LineTo line1 = new LineTo(-50, 250);
-        logPath3.getElements().add(moveTo);
-        logPath3.getElements().add(line1);
-        logPathTransition3.setDuration(Duration.millis(2800));
-        logPathTransition3.setNode(log3);
-        logPathTransition3.setCycleCount(PathTransition.INDEFINITE);
-        logPathTransition3.setAutoReverse(false);
-        logPathTransition3.setPath(logPath3);
-        logPathTransition3.play();
-
-    }
-    public void log4Transition() {
-
-        MoveTo moveTo = new MoveTo(-50, 195);
-        LineTo line1 = new LineTo(900, 195);
-        logPath4.getElements().add(moveTo);
-        logPath4.getElements().add(line1);
-        logPathTransition4.setDuration(Duration.millis(3500));
-        logPathTransition4.setNode(log4);
-        logPathTransition4.setCycleCount(PathTransition.INDEFINITE);
-        logPathTransition4.setAutoReverse(false);
-        logPathTransition4.setPath(logPath4);
-        logPathTransition4.play();
-
-    }
-    public void log5Transition() {
-
-        MoveTo moveTo = new MoveTo(900, 140);
-        LineTo line1 = new LineTo(-50, 140);
-        logPath5.getElements().add(moveTo);
-        logPath5.getElements().add(line1);
-        logPathTransition5.setDuration(Duration.millis(2900));
-        logPathTransition5.setNode(log5);
-        logPathTransition5.setCycleCount(PathTransition.INDEFINITE);
-        logPathTransition5.setAutoReverse(false);
-        logPathTransition5.setPath(logPath5);
-        logPathTransition5.play();
-
     }
 
     // Prüft ob Frosch mit Stamm kollidiert und bewegt Frosch mit
-    private final ChangeListener<Number> checkIntersectionBaum = (ob,n,n1)->{
-        if (log1.getBoundsInParent().intersects(frog.getBoundsInParent())){
-            System.out.println("BAUM TRIFFT");
-            if(frog.getX() > 50){
-                frog.setX(frog.getX()-6.5);}
+    private final ChangeListener<Number> checkIntersectionBaum = (ob, n, n1) -> {
+        if (log1.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            System.out.println("BAUM1 TRIFFT");
+            if (frog.getX() > 50) {
+                frog.setX(frog.getX() - 6.4);
+            }
             System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
         }
     };
-    private final ChangeListener<Number> checkIntersectionBaum2 = (ob,n,n1)->{
-        if (log2.getBoundsInParent().intersects(frog.getBoundsInParent())){
-            System.out.println("BAUM TRIFFT");
-            if(frog.getX() < 700){
-                frog.setX(frog.getX()+ 6.3);}
+    private final ChangeListener<Number> checkIntersectionBaum2 = (ob, n, n1) -> {
+        if (log2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            System.out.println("BAUM2 TRIFFT");
+            if (frog.getX() < 700) {
+                frog.setX(frog.getX() + 7.8);
+            }
             System.out.println("Nach Rechts durch BAUM -> y = " + frog.getY());
         }
     };
-    private final ChangeListener<Number> checkIntersectionBaum3 = (ob,n,n1)->{
-        if (log3.getBoundsInParent().intersects(frog.getBoundsInParent())){
-            System.out.println("BAUM TRIFFT");
-            if(frog.getX() > 50){
-                frog.setX(frog.getX()-6.87);}
+    private final ChangeListener<Number> checkIntersectionBaum3 = (ob, n, n1) -> {
+        if (log3.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            System.out.println("BAUM3 TRIFFT");
+            if (frog.getX() > 50) {
+                frog.setX(frog.getX() - 5);
+            }
             System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
         }
     };
-    private final ChangeListener<Number> checkIntersectionBaum4 = (ob,n,n1)->{
-        if (log4.getBoundsInParent().intersects(frog.getBoundsInParent())){
-            System.out.println("BAUM TRIFFT");
-            if(frog.getX() < 700){
-                frog.setX(frog.getX()+5.74);}
+    private final ChangeListener<Number> checkIntersectionBaum4 = (ob, n, n1) -> {
+        if (log4.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            System.out.println("BAUM4 TRIFFT");
+            if (frog.getX() < 700) {
+                frog.setX(frog.getX() + 6);
+            }
             System.out.println("Nach Rechts durch BAUM -> y = " + frog.getY());
         }
     };
-    private final ChangeListener<Number> checkIntersectionBaum5 = (ob,n,n1)->{
-        if (log5.getBoundsInParent().intersects(frog.getBoundsInParent())){
-            System.out.println("BAUM TRIFFT");
-            if(frog.getX() > 50){
-                frog.setX(frog.getX()-6.58);}
+    private final ChangeListener<Number> checkIntersectionBaum5 = (ob, n, n1) -> {
+        if (log5.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            System.out.println("BAUM5 TRIFFT");
+            if (frog.getX() > 50) {
+                frog.setX(frog.getX() - 7.4);
+            }
             System.out.println("Nach Links durch BAUM -> y = " + frog.getY());
         }
     };
     // Prüft ob Autos mit Frosch kollidieren
-    private final ChangeListener<Number> checkIntersection = (ob,n,n1)->{
-        if (carR.getBoundsInParent().intersects(frog.getBoundsInParent())){
+    private final ChangeListener<Number> checkIntersection = (ob, n, n1) -> {
+        if (carR.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             endgame();
         }
     };
 
-    private final ChangeListener<Number> checkIntersection2 = (ob,n,n1)->{
-        if (carL.getBoundsInParent().intersects(frog.getBoundsInParent())){
+    private final ChangeListener<Number> checkIntersection2 = (ob, n, n1) -> {
+        if (carL.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             endgame();
 
         }
     };
-    private final ChangeListener<Number> checkIntersection3 = (ob,n,n1)->{
-        if (carR2.getBoundsInParent().intersects(frog.getBoundsInParent())){
+    private final ChangeListener<Number> checkIntersection3 = (ob, n, n1) -> {
+        if (carR2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             endgame();
         }
     };
 
-    private final ChangeListener<Number> checkIntersection4 = (ob,n,n1)->{
-        if (carL2.getBoundsInParent().intersects(frog.getBoundsInParent())){
+    private final ChangeListener<Number> checkIntersection4 = (ob, n, n1) -> {
+        if (carL2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            endgame();
+
+        }
+    };
+    private final ChangeListener<Number> checkIntersection5 = (ob, n, n1) -> {
+        if (carR3.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             endgame();
 
         }
     };
 
-    private final ChangeListener<Number> checkIntersectionRect = (ob,n,n1)->{
-        if (frog.getBoundsInParent().intersects(rectangle.getBoundsInParent())){
-            endgame();
-
-        }
-    };
+    // Prüft ob Frosch mit Rechteck kollidiert
+//    private final ChangeListener<Number> checkIntersectionRect = (ob,n,n1)->{
+//        if (frog.getBoundsInParent().intersects(rectangle.getBoundsInParent())){
+//            System.out.println("Trifft Rechteck");
+//            endgame();
+//
+//        }
+//    };
 
     private void endgame() {
         System.out.println("Ein Leben Verloren");
         frog.setX(385);
         frog.setY(725);
-        leben -= 1;            if (leben == 4) {game.getChildren().remove(heart5);}
-        if (leben == 3) {game.getChildren().remove(heart4);}
-        if (leben == 2) {game.getChildren().remove(heart3);}
-        if (leben == 1) {game.getChildren().remove(heart2);}
+        leben -= 1;
+        if (leben == 4) {
+            game.getChildren().remove(heart5);
+        }
+        if (leben == 3) {
+            game.getChildren().remove(heart4);
+        }
+        if (leben == 2) {
+            game.getChildren().remove(heart3);
+        }
+        if (leben == 1) {
+            game.getChildren().remove(heart2);
+        }
         if (leben == 0) {
             game.getChildren().remove(heart1);
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
