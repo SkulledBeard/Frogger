@@ -1,11 +1,12 @@
 package sample;
 
-
+// all Imports
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -22,9 +23,7 @@ import javafx.util.Duration;
 public class Controller {
     private int life = 5;
 
-    // Dieses Objekt kommt aus der FXML-Datei
-    // @FXML
-    // private ImageView frog;
+
     private Avatar frog;
     @FXML
     private Pane game;
@@ -36,8 +35,14 @@ public class Controller {
     private ImageView carR, carR2, carR3;
     private ImageView carL, carL2;
     private ImageView log1, log2, log3, log4, log5;
-
+    private ImageView blood, blood2, blood3, blood4,blood5;
+    private ImageView bubbles, bubbles2, bubbles3, bubbles4, bubbles5;
     private ImageView heart1, heart2, heart3, heart4, heart5;
+
+    private boolean isBloodSet, isBlood2Set, isBlood3Set, isBlood4Set, isBlood5Set;
+    private boolean isBubbleSet, isBubble2Set, isBubble3Set, isBubble4Set, isBubble5Set;
+
+    private boolean needRotation;
 
     // car transition
     private Path path = new Path();
@@ -64,14 +69,15 @@ public class Controller {
     private PathTransition logPathTransition5 = new PathTransition();
 
 
-    // Wasserrechteck erstellen
+    // Waterrec.
     private Rectangle rectangle = new Rectangle();
-    // Zielrechteck erstellen
+    // Goalrec.
     private Rectangle rectangleGOAL = new Rectangle();
 
     @FXML
     private void initialize() {
 
+        // set the PNG
         frog = new Avatar("image/frog_50_38_lila.png");
         carR = new ImageView("image/car_green_40_r.png");
         carL = new ImageView("image/car_red_40.png");
@@ -79,22 +85,35 @@ public class Controller {
         carL2 = new ImageView("image/car_red_40.png");
         carR3 = new ImageView("image/car_green_40_r.png");
         log1 = new ImageView("image/woodlog.png");
-        log2 = new ImageView("image/woodlog2.png");
+        log2 = new ImageView("image/woodlog.png");
         log3 = new ImageView("image/woodlog.png");
-        log4 = new ImageView("image/woodlog2.png");
+        log4 = new ImageView("image/woodlog.png");
         log5 = new ImageView("image/woodlog.png");
         heart1 = new ImageView("image/heart.png");
         heart2 = new ImageView("image/heart.png");
         heart3 = new ImageView("image/heart.png");
         heart4 = new ImageView("image/heart.png");
         heart5 = new ImageView("image/heart.png");
+        blood = new ImageView("image/blood.png");
+        blood2 = new ImageView("image/blood.png");
+        blood3 = new ImageView("image/blood.png");
+        blood4 = new ImageView("image/blood.png");
+        blood5 = new ImageView("image/blood.png");
+        bubbles = new ImageView("image/bubbles.png");
+        bubbles2 = new ImageView("image/bubbles.png");
+        bubbles3 = new ImageView("image/bubbles.png");
+        bubbles4 = new ImageView("image/bubbles.png");
+        bubbles5 = new ImageView("image/bubbles.png");
 
+
+        //set the points counter
         game.getChildren().add(text);
-        text.setFont(Font.loadFont("file:C:/Users/Administrator/IdeaProjects/JavaFX/src/font/pixelFont.TTF", 35));
+        text.setFont(Font.loadFont(Main.class.getClassLoader().getResourceAsStream("font/pixelFont.TTF"), 35));
         text.setFill(Color.WHITE);
         text.setX(570);
         text.setY(42);
 
+        // add all "children" to the game
         game.getChildren().add(heart1);
         game.getChildren().add(heart2);
         game.getChildren().add(heart3);
@@ -102,6 +121,16 @@ public class Controller {
         game.getChildren().add(heart5);
         game.getChildren().add(rectangle);
         game.getChildren().add(rectangleGOAL);
+        game.getChildren().add(blood);
+        game.getChildren().add(blood2);
+        game.getChildren().add(blood3);
+        game.getChildren().add(blood4);
+        game.getChildren().add(blood5);
+        game.getChildren().add(bubbles);
+        game.getChildren().add(bubbles2);
+        game.getChildren().add(bubbles3);
+        game.getChildren().add(bubbles4);
+        game.getChildren().add(bubbles5);
         game.getChildren().add(log1);
         game.getChildren().add(log2);
         game.getChildren().add(log3);
@@ -114,7 +143,7 @@ public class Controller {
         game.getChildren().add(carL2);
         game.getChildren().add(carR3);
 
-        //Wasserrechteck platzieren
+        //place waterrec.
         rectangle.setX(-10);
         rectangle.setY(120);
         rectangle.setWidth(900);
@@ -123,6 +152,7 @@ public class Controller {
         rectangle.setFill(Color.rgb(0, 0, 0, 0));
         rectangle.setStrokeWidth(0);
 
+        //place goalrec.
         rectangleGOAL.setX(-10);
         rectangleGOAL.setY(0);
         rectangleGOAL.setWidth(900);
@@ -131,12 +161,33 @@ public class Controller {
         rectangleGOAL.setFill(Color.rgb(0, 0, 0, 0));
         rectangleGOAL.setStrokeWidth(0);
 
+        //place hearts
         heart1.setX(10);
         heart2.setX(70);
         heart3.setX(130);
         heart4.setX(190);
         heart5.setX(250);
 
+        //place blood out of the frame
+        blood.setY(-100);
+        blood2.setY(-100);
+        blood3.setY(-100);
+        blood4.setY(-100);
+        blood5.setY(-100);
+
+        //put the bubbles out of the frame and set the opacity
+        bubbles.setY(-100);
+        bubbles.setOpacity(0.4);
+        bubbles2.setY(-100);
+        bubbles2.setOpacity(0.4);
+        bubbles3.setY(-100);
+        bubbles3.setOpacity(0.4);
+        bubbles4.setY(-100);
+        bubbles4.setOpacity(0.4);
+        bubbles5.setY(-100);
+        bubbles5.setOpacity(0.4);
+
+        //set the objectTransition
         objectTransition(-50,690,900,690,path,pathTransition,1235,carR);
         objectTransition(-50,575,900,575,path3,pathTransition3,1500,carR2);
         objectTransition(-50,460,900,460,path5,pathTransition5,1100,carR3);
@@ -149,12 +200,14 @@ public class Controller {
         objectTransition(-300,195,1050,195,logPath4,logPathTransition4,4800,log4);
         objectTransition(900,140,-50,140,logPath5,logPathTransition5,2700,log5);
 
+        //give the X and Y of the frog
         System.out.println(frog.getX());
         System.out.println(frog.getY());
 
 
         frog.setFocusTraversable(true);
 
+        //listener for cars and logs
         carL.translateXProperty().addListener(checkIntersection2);
         carL.translateYProperty().addListener(checkIntersection2);
 
@@ -212,23 +265,25 @@ public class Controller {
 
     }
 
-
+    //function for checking if frog gets in to water
     private void collisionLogAndWater() {
         if(frog.intersects(rectangle.getBoundsInParent())){
             if(!frog.intersects(log5.getBoundsInParent()) && !frog.intersects(log4.getBoundsInParent()) && !frog.intersects(log3.getBoundsInParent()) &&
                !frog.intersects(log1.getBoundsInParent()) && !frog.intersects(log2.getBoundsInParent())){
+                bubblesShow();
                 endgame();
             }
         }
     }
 
+    //points counter
     private void pointsCounter() {
 
         points -= 321;
         text.setText(String.valueOf(points));
     }
 
-
+    //function for empty objectTransition
     public void objectTransition(int moveToX, int moveToY, int lineToX, int lineToY, Path path, PathTransition pathTransition, int millis, ImageView imageView){
         MoveTo moveTo = new MoveTo(moveToX, moveToY);
         LineTo line1 = new LineTo(lineToX, lineToY);
@@ -242,11 +297,14 @@ public class Controller {
         pathTransition.play();
     }
 
-    // Prüft ob Frosch mit Stamm kollidiert und bewegt Frosch mit
+    //checking if frog collides with log and takes him with it
     private final ChangeListener<Number> checkIntersectionLog = (ob, n, n1) -> {
         if (log1.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             if (frog.getX() > 50) {
                 frog.setX(log1.getBoundsInParent().getCenterX());
+            }else{
+                bubblesShow();
+                endgame();
             }
         }
     };
@@ -254,6 +312,9 @@ public class Controller {
         if (log2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             if (frog.getX() < 700) {
                 frog.setX(log2.getBoundsInParent().getCenterX());
+            }else{
+                bubblesShow();
+                endgame();
             }
         }
     };
@@ -261,6 +322,9 @@ public class Controller {
         if (log3.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             if (frog.getX() > 50) {
                 frog.setX(log3.getBoundsInParent().getCenterX());
+            }else{
+                bubblesShow();
+                endgame();
             }
         }
     };
@@ -268,6 +332,9 @@ public class Controller {
         if (log4.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             if (frog.getX() < 700) {
                 frog.setX(log4.getBoundsInParent().getCenterX());
+            }else{
+                bubblesShow();
+                endgame();
             }
         }
     };
@@ -275,57 +342,136 @@ public class Controller {
         if (log5.getBoundsInParent().intersects(frog.getBoundsInParent())) {
             if (frog.getX() > 50) {
                 frog.setX(log5.getBoundsInParent().getCenterX());
+            }else{
+                bubblesShow();
+                endgame();
             }
         }
     };
 
-    //
-    //tree.translateXProperty().addListener(
-    //              (observerableValue, oldValue, newValue) -> {
-    //              -> AUFRUF <-}
 
-
-    // Prüft ob Autos mit Frosch kollidieren
+    // check if frog collides with car
     private final ChangeListener<Number> checkIntersection = (ob, n, n1) -> {
         if (carR.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            needRotation = false;
+            bloodpool();
             endgame();
         }
     };
 
     private final ChangeListener<Number> checkIntersection2 = (ob, n, n1) -> {
         if (carL.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            needRotation = true;
+            bloodpool();
             endgame();
-
         }
     };
     private final ChangeListener<Number> checkIntersection3 = (ob, n, n1) -> {
         if (carR2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            needRotation = false;
+            bloodpool();
             endgame();
         }
     };
 
     private final ChangeListener<Number> checkIntersection4 = (ob, n, n1) -> {
         if (carL2.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            needRotation = true;
+            bloodpool();
             endgame();
 
         }
     };
     private final ChangeListener<Number> checkIntersection5 = (ob, n, n1) -> {
         if (carR3.getBoundsInParent().intersects(frog.getBoundsInParent())) {
+            needRotation = false;
+            bloodpool();
             endgame();
 
         }
     };
 
-    // Prüft ob Frosch mit Rechteck kollidiert
-//    private final ChangeListener<Number> checkIntersectionRect = (ob,n,n1)->{
-//        if (frog.getBoundsInParent().intersects(rectangle.getBoundsInParent())){
-//            System.out.println("Trifft Rechteck");
-//            endgame();
-//
-//        }
-//    };
+    //let the bubble show if frog drowns in water
+    private void bubblesShow(){
+        if(!isBubbleSet){
+            bubbles.setX(frog.getX());
+            bubbles.setY(frog.getY());
+            isBubbleSet = true;
+        }else if(!isBubble2Set){
+            bubbles2.setX(frog.getX());
+            bubbles2.setY(frog.getY());
+            isBubble2Set = true;
+        }else if(!isBubble3Set){
+            bubbles3.setX(frog.getX());
+            bubbles3.setY(frog.getY());
+            isBubble3Set = true;
+        }else if(!isBubble4Set){
+            bubbles4.setX(frog.getX());
+            bubbles4.setY(frog.getY());
+            isBubble4Set = true;
+        }else if(!isBubble5Set){
+            bubbles5.setX(frog.getX());
+            bubbles5.setY(frog.getY());
+            isBubble5Set = true;
+        }
+    }
 
+    //let the blood appear if car hits the frog
+    private void bloodpool(){
+       if(!needRotation){
+        if(!isBloodSet){
+            blood.setX(frog.getX());
+            blood.setY(frog.getY());
+            isBloodSet = true;
+        }else if(!isBlood2Set){
+            blood2.setX(frog.getX());
+            blood2.setY(frog.getY());
+            isBlood2Set = true;
+        }else if(!isBlood3Set){
+            blood3.setX(frog.getX());
+            blood3.setY(frog.getY());
+            isBlood3Set = true;
+        }else if(!isBlood4Set){
+            blood4.setX(frog.getX());
+            blood4.setY(frog.getY());
+            isBlood4Set = true;
+        }else if(!isBlood5Set){
+            blood5.setX(frog.getX());
+            blood5.setY(frog.getY());
+            isBlood5Set = true;
+        }
+       }
+       if(needRotation){
+           if(!isBloodSet){
+               blood.setX(frog.getX());
+               blood.setY(frog.getY());
+               blood.setRotate(180);
+               isBloodSet = true;
+           }else if(!isBlood2Set){
+               blood2.setX(frog.getX());
+               blood2.setY(frog.getY());
+               blood2.setRotate(180);
+               isBlood2Set = true;
+           }else if(!isBlood3Set){
+               blood3.setX(frog.getX());
+               blood3.setY(frog.getY());
+               blood3.setRotate(180);
+               isBlood3Set = true;
+           }else if(!isBlood4Set){
+               blood4.setX(frog.getX());
+               blood4.setY(frog.getY());
+               blood4.setRotate(180);
+               isBlood4Set = true;
+           }else if(!isBlood5Set){
+               blood5.setX(frog.getX());
+               blood5.setY(frog.getY());
+               blood5.setRotate(180);
+               isBlood5Set = true;
+           }
+       }
+    }
+
+    //function for taking hearts away and give a massage
     private void endgame() {
         frog.setX(385);
         frog.setY(725);
@@ -355,6 +501,8 @@ public class Controller {
             alert.show();
         }
     }
+
+    //function for completing the game and a massage with points
     private void goal() {
         if(frog.intersects(rectangleGOAL.getBoundsInParent())){
             int heart = 0;

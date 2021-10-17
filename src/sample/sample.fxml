@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.Pane?>
 <StackPane fx:controller="sample.Controller"
            xmlns:fx="http://javafx.com/fxml">
-    <Pane fx:id="game" style="-fx-background-image:url('file:C:/Users/Administrator/IdeaProjects/JavaFX/src/image/bg_gesamt.png')">
+    <Pane fx:id="game" style="-fx-background-image:url('image/bg_gesamt.png')">
 
     </Pane>
 </StackPane>
